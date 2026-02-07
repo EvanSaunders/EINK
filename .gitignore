@@ -4,3 +4,5 @@ echo "*.pyc" >> .gitignore
 __pycache__/
 *.pyc
 .env
+/home/evans/EINK/images
+/home/evans/EINK/gifs
