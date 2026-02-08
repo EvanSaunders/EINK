@@ -13,17 +13,32 @@ bot_token = os.getenv("DISCORD_TOKEN")
 guild_id = int(os.getenv("GUILD_ID"))
 channel_id = int(os.getenv("CHANNEL_ID"))
 
-def fetch_avatar_sync(url):
-    """Fetch avatar image synchronously using requests"""
+def fetch_avatar_sync(url, size):
     resp = requests.get(url, timeout=5)
     img = Image.open(BytesIO(resp.content)).convert("L")
-    return img.resize((50, 50))
+    return img.resize(size)
 
 class DiscordApp:
-    def __init__(self, epd, image, draw):
+    def __init__(
+        self,
+        epd,
+        image,
+        draw,
+        area=(425, 0, 800, 75),
+        bg_color=255,
+        avatar_size=(50, 50),
+        padding=10,
+        max_users = 6
+    ):
         self.epd = epd
         self.image = image
         self.draw = draw
+
+        self.area = area
+        self.bg_color = bg_color
+        self.avatar_size = avatar_size
+        self.padding = padding
+
         self.prev_online_users = set()
 
         intents = discord.Intents.default()
@@ -31,10 +46,7 @@ class DiscordApp:
         intents.presences = True
         self.client = discord.Client(intents=intents)
 
-        # Start Discord client in background thread
         threading.Thread(target=self.run_bot, daemon=True).start()
-
-        # Start periodic update
         self.schedule_update()
 
     def run_bot(self):
@@ -65,7 +77,6 @@ class DiscordApp:
                 and not m.bot
             ]
 
-            # Only update if list changed
             current_names = {m.name for m in online_members}
             prev_names = {m.name for m in self.prev_online_users}
             if current_names == prev_names:
@@ -73,28 +84,29 @@ class DiscordApp:
                 return
 
             self.prev_online_users = online_members
-            print("Online users:", [m.name for m in online_members])
+            online_members = online_members[:6]
 
-            online_members = online_members[:6]  # max 6 users
-            avatar_images = [fetch_avatar_sync(m.display_avatar.url) for m in online_members]
+            avatar_images = [
+                fetch_avatar_sync(m.display_avatar.url, self.avatar_size)
+                for m in online_members
+            ]
 
-            # Draw avatars onto e-ink
-            self.draw.rectangle((425, 0, 800, 75), fill=255)  # clear area
-            padding = 10
-            x_offset = self.image.width - padding
-            y_offset = padding
+            x1, y1, x2, y2 = self.area
+
+            # Clear custom region with custom background color
+            self.draw.rectangle((x1, y1, x2, y2), fill=self.bg_color)
+
+            # Start drawing from the right edge of the region
+            x_offset = x2 - self.padding
+            y_offset = y1 + self.padding
+
             for avIm in avatar_images:
                 w, h = avIm.size
-                x_offset_current = x_offset - w
-                self.image.paste(avIm, (x_offset_current, y_offset))
-                x_offset -= (w + padding)
-
-            #self.epd.init()
-            #self.epd.display(self.epd.getbuffer(self.image))  # full refresh
-            #self.epd.init_part()
+                x_current = x_offset - w
+                self.image.paste(avIm, (x_current, y_offset))
+                x_offset -= (w + self.padding)
 
         except Exception as e:
             print("Discord update failed:", e)
 
-        # Schedule next update
         self.schedule_update()

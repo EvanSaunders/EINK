@@ -19,12 +19,9 @@ draw = ImageDraw.Draw(image)
 image_dir = "/home/evans/EINK/images"
 rand_img = random.choice(os.listdir(image_dir))
 img_path = os.path.join(image_dir, rand_img)
-#img_path = os.path.join(os.path.dirname(__file__), "images", "turbogranny.jpg")
 logo = Image.open(img_path).convert("L")
 
 logo_clean = logo.point(lambda x: 255 if x > 225 else x)
-#logo_clean = logo.convert("1", dither=Image.FLOYDSTEINBERG)
-#logo_clean = logo_bw.filter(ImageFilter.MedianFilter(size=3))
 
 MAX_H = 400
 MIN_H = 200
