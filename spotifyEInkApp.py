@@ -91,7 +91,7 @@ class SpotifyEInkApp:
                             self.album_img = img
 
                         # Draw onto e-ink
-                        font = ImageFont.truetype("/usr/share/fonts/type1/urw-base35/URWGothic-BookOblique.t1", 35)
+                        font = ImageFont.truetype("/usr/share/fonts/type1/urw-base35/URWGothic-BookOblique.t1", 20)
                         self.draw.rectangle((8, 165, 410, 500), fill=255)  # clear area
                         track_display = truncate_text(track_name, font, MAX_WIDTH)
                         artist_display = truncate_text(artist_name, font, MAX_WIDTH)

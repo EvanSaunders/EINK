@@ -33,6 +33,7 @@ class DiscordApp:
         self.epd = epd
         self.image = image
         self.draw = draw
+        self.max_users = max_users
 
         self.area = area
         self.bg_color = bg_color
@@ -84,7 +85,7 @@ class DiscordApp:
                 return
 
             self.prev_online_users = online_members
-            online_members = online_members[:6]
+            online_members = online_members[:self.max_users]
 
             avatar_images = [
                 fetch_avatar_sync(m.display_avatar.url, self.avatar_size)

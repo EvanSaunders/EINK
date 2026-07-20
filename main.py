@@ -19,6 +19,7 @@ draw = ImageDraw.Draw(image)
 image_dir = "/home/evans/EINK/images"
 rand_img = random.choice(os.listdir(image_dir))
 img_path = os.path.join(image_dir, rand_img)
+#img_path = os.path.join(image_dir,  "maka3.jpg")
 logo = Image.open(img_path).convert("L")
 
 logo_clean = logo.point(lambda x: 255 if x > 225 else x)
@@ -50,8 +51,8 @@ y = height - h
 image.paste(logo_clean, (x, y))
 
 #fonts
-time_font = ImageFont.truetype("/usr/share/fonts/truetype/liberation2/LiberationSerif-Bold.ttf", 70)
-font = ImageFont.truetype("/usr/share/fonts/truetype/liberation2/LiberationSerif-Bold.ttf", 36)
+time_font = ImageFont.truetype("Eurostile Extended #2 Regular.otf", 45)
+font = ImageFont.truetype("Eurostile Extended #2 Regular.otf", 25)
 
 today = datetime.now()
 date_str = today.strftime("%a, %b %d, %Y")
@@ -60,7 +61,7 @@ epd.display(epd.getbuffer(image))
 
 
 epd.init_part()
-x0, y0, x1, y1 = -3, -10, 420, 100
+x0, y0, x1, y1 = -3, 5, 420, 100
 
 spotify_app = SpotifyEInkApp(epd, image, draw)
 discord_app = DiscordApp(epd, image, draw)
