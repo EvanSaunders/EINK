@@ -8,12 +8,6 @@ run:
 stop:
 	sudo pkill -9 -f main.py
 
-run_main:
-	@echo "Running e-ink app..."
-	~/EINK/venv/bin/python main.py
-stop_main:
-	sudo pkill -9 -f main.py
-
 
 run_dash:
 	@echo "Running e-ink app..."
